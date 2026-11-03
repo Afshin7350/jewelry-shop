@@ -1,0 +1,617 @@
+/* ==========================================================
+   اسلایدر هیرو
+   ========================================================== */
+
+.hero {
+  --hero-delay: 6s;
+  --hero-text: #1f2a37;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: clamp(500px, 76vh, 660px);
+  background-color: #eef1f6;
+  color: var(--hero-text);
+}
+
+/* ---------- اسلایدها ---------- */
+
+.hero-slide {
+  --cx: 30%;
+  --cy: 50%;
+
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 32px;
+  padding: 0 clamp(24px, 7vw, 110px) 40px;
+  color: var(--slide-text, var(--hero-text));
+  visibility: hidden;
+}
+
+/* پس‌زمینه‌ی رنگی در لایه‌ی جداگانه است تا نرم ظاهر شود */
+.hero-slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(
+      ellipse at var(--cx) var(--cy),
+      rgba(255, 255, 255, 0.75),
+      transparent 62%
+    ),
+    linear-gradient(135deg, var(--slide-bg-from), var(--slide-bg-to));
+  opacity: 0;
+}
+
+.hero-slide.is-prev {
+  z-index: 1;
+  visibility: visible;
+}
+
+.hero-slide.is-prev::before {
+  opacity: 1;
+}
+
+.hero-slide.is-active {
+  z-index: 2;
+  visibility: visible;
+}
+
+.hero-slide.is-active::before {
+  opacity: 1;
+  transition: opacity 1.4s ease;
+}
+
+/* محتوای اسلایدِ در حال خروج سریع محو می‌شود */
+.hero-slide.is-prev .hero-content,
+.hero-slide.is-prev .hero-visual {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* ---------- متن ---------- */
+
+.hero-content {
+  max-width: 520px;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  margin-bottom: 18px;
+  padding: 6px 16px;
+  border: 1px solid color-mix(in srgb, var(--slide-accent) 55%, transparent);
+  border-radius: 999px;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: var(--slide-accent);
+}
+
+.hero-title {
+  margin-bottom: 18px;
+  font-size: clamp(2rem, 4.2vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.hero-text {
+  margin-bottom: 32px;
+  font-size: 1.05rem;
+  line-height: 2;
+  opacity: 0.82;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 30px;
+  border-radius: 999px;
+  background-color: var(--slide-accent);
+  color: #ffffff;
+  font-weight: 700;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hero-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--slide-accent) 45%, transparent);
+}
+
+.hero-btn svg {
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.hero-btn:hover svg {
+  transform: translateX(-4px);
+}
+
+/* ---------- تصویر جواهر ---------- */
+
+.hero-visual {
+  position: relative;
+  width: min(100%, 440px);
+  aspect-ratio: 1;
+  justify-self: center;
+}
+
+.hero-orbit {
+  position: absolute;
+  inset: -4%;
+  border: 1px solid color-mix(in srgb, var(--slide-accent) 38%, transparent);
+  border-radius: 50%;
+  transition: filter 0.6s ease;
+  animation: hero-spin 60s linear infinite;
+}
+
+.hero-orbit::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background-color: var(--slide-accent);
+  box-shadow: 0 0 16px var(--slide-accent);
+}
+
+.hero-glow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    color-mix(in srgb, var(--slide-accent) 14%, transparent) 55%,
+    transparent 70%
+  );
+  opacity: 0.8;
+  animation: hero-glow 5s ease-in-out infinite;
+}
+
+.hero-jewel {
+  position: absolute;
+  inset: 6%;
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.hero-jewel img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 26px 30px rgba(31, 42, 55, 0.28));
+}
+
+.hero-spark {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background-color: var(--slide-accent);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  opacity: 0;
+  transition: filter 0.6s ease;
+}
+
+.hero-spark--1 { top: 14%; right: 12%; }
+.hero-spark--2 { top: 56%; left: 2%; width: 16px; height: 16px; }
+.hero-spark--3 { bottom: 10%; right: 22%; width: 12px; height: 12px; }
+.hero-spark--4 { top: 30%; left: 8%; width: 14px; height: 14px; }
+.hero-spark--5 { bottom: 22%; left: 20%; width: 18px; height: 18px; }
+
+/* دایره‌های شناورِ نرم پشت جواهر (با رفتن ماوس روی جواهر محو می‌شوند) */
+.hero-bokeh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: filter 0.6s ease, opacity 0.6s ease;
+}
+
+.hero-bokeh i {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.12) 70%
+  );
+  animation: hero-drift 7s ease-in-out infinite;
+}
+
+.hero-bokeh i:nth-child(1) { top: 8%;     left: 4%;   width: 64px; height: 64px; animation-duration: 7s; }
+.hero-bokeh i:nth-child(2) { top: 20%;    right: 0;   width: 36px; height: 36px; animation-duration: 5.5s; animation-delay: -2s; }
+.hero-bokeh i:nth-child(3) { bottom: 14%; left: 10%;  width: 44px; height: 44px; animation-duration: 8s; animation-delay: -4s; }
+.hero-bokeh i:nth-child(4) { bottom: 6%;  right: 16%; width: 80px; height: 80px; animation-duration: 9s; animation-delay: -1s; }
+.hero-bokeh i:nth-child(5) { top: 48%;    left: -4%;  width: 24px; height: 24px; animation-duration: 6s; animation-delay: -3s; }
+.hero-bokeh i:nth-child(6) { top: 4%;     right: 30%; width: 20px; height: 20px; animation-duration: 6.5s; animation-delay: -5s; }
+
+/* درخشش: نسخه‌ی روشن‌تر عکس که فقط داخل یک نوار مورب متحرک دیده می‌شود */
+.hero-jewel .hero-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: brightness(2.4) saturate(0.7);
+  -webkit-mask-image: linear-gradient(115deg, transparent 40%, #000 50%, transparent 60%);
+  mask-image: linear-gradient(115deg, transparent 40%, #000 50%, transparent 60%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 160% 0;
+  mask-position: 160% 0;
+}
+
+/* حلقه‌های ضربه (هنگام فرود انگشتر) */
+.hero-slide--ring .hero-visual::before,
+.hero-slide--ring .hero-visual::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border: 2px solid var(--slide-accent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- ظاهر هر اسلاید ---------- */
+
+.hero-slide--necklace .hero-jewel {
+  inset: -6%;
+  transform-origin: 50% 0;
+}
+
+.hero-slide--earrings .hero-jewel {
+  transform-origin: 50% 6%;
+}
+
+.hero-slide--bangle .hero-jewel {
+  inset: -4%;
+}
+
+/* زنجیر از بالای عکس بیرون می‌زند؛ به‌جای بریدن، محو می‌شود */
+.hero-slide--necklace .hero-jewel img:not(.hero-shine) {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 24%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 24%);
+}
+
+/* ---------- هاور (فقط ماوس): انگشتر بزرگ می‌شود و پس‌زمینه محو می‌شود ---------- */
+
+@media (hover: hover) {
+  .hero-visual:hover .hero-jewel {
+    transform: scale(1.06);
+  }
+
+  .hero-slide--ring .hero-visual:hover .hero-jewel {
+    transform: scale(1.1);
+  }
+
+  .hero-slide--ring .hero-visual:hover .hero-bokeh {
+    filter: blur(7px);
+    opacity: 0.7;
+  }
+
+  .hero-slide--ring .hero-visual:hover .hero-orbit,
+  .hero-slide--ring .hero-visual:hover .hero-spark {
+    filter: blur(5px);
+  }
+}
+
+/* ---------- انیمیشن ورود (فقط برای اسلاید فعال) ---------- */
+
+.hero-slide.is-active .hero-eyebrow { animation: hero-rise 1s 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.hero-slide.is-active .hero-title   { animation: hero-rise 1s 0.58s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.hero-slide.is-active .hero-text    { animation: hero-rise 1s 0.71s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.hero-slide.is-active .hero-btn     { animation: hero-rise 1s 0.84s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+
+.hero-slide--ring.is-active .hero-btn {
+  animation:
+    hero-rise 1s 0.84s cubic-bezier(0.22, 1, 0.36, 1) backwards,
+    hero-pulse 2.8s 2.6s ease-out infinite;
+}
+
+/* انگشتر: با جهش وارد می‌شود، له می‌شود و دو حلقه‌ی ضربه می‌فرستد */
+.hero-slide--ring.is-active .hero-jewel {
+  animation: hero-ring-bounce 1.9s 0.35s linear backwards;
+}
+
+.hero-slide--ring.is-active .hero-visual::before {
+  animation: hero-ripple 1.2s 1.05s ease-out backwards;
+}
+
+.hero-slide--ring.is-active .hero-visual::after {
+  animation: hero-ripple 1.1s 1.62s ease-out backwards;
+}
+
+/* نسخه‌ی درخشش باید همراه عکس شناور بماند، برای همین هر دو انیمیشن فهرست شده‌اند */
+.hero-slide--ring.is-active .hero-jewel .hero-shine {
+  animation:
+    hero-float 6s ease-in-out infinite,
+    hero-shine 4.5s 2.2s ease-in-out infinite;
+}
+
+/* گوشواره: سقوط و تاب‌خوردن مثل آونگ */
+.hero-slide--earrings.is-active .hero-jewel {
+  animation: hero-pendulum 3.2s 0.35s ease-in-out backwards;
+}
+
+/* انگشتر یاقوت کبود: چرخش مثل صفحه‌ی گردان */
+.hero-slide--sapphire.is-active .hero-jewel {
+  animation: hero-flip 2s 0.35s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* دستبند: مثل حلقه از کنار غلت می‌خورد و وارد می‌شود */
+.hero-slide--bangle.is-active .hero-jewel {
+  animation: hero-roll 2s 0.35s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* گردنبند: از بالا می‌افتد و تاب می‌خورد */
+.hero-slide--necklace.is-active .hero-jewel {
+  animation: hero-necklace-in 2.4s 0.35s ease-in-out backwards;
+}
+
+.hero-slide--earrings.is-active .hero-jewel .hero-shine,
+.hero-slide--sapphire.is-active .hero-jewel .hero-shine,
+.hero-slide--bangle.is-active .hero-jewel .hero-shine {
+  animation:
+    hero-float 6s ease-in-out infinite,
+    hero-shine 5s 2.6s ease-in-out infinite;
+}
+
+.hero-slide--necklace.is-active .hero-jewel .hero-shine {
+  animation:
+    hero-float 6s ease-in-out infinite,
+    hero-shine 5s 2.4s ease-in-out infinite;
+}
+
+.hero-slide.is-active .hero-jewel img,
+.hero-slide.is-prev .hero-jewel img {
+  animation: hero-float 6s ease-in-out infinite;
+}
+
+.hero-slide.is-active .hero-spark--1 { animation: hero-twinkle 2.8s 1.2s ease-in-out infinite; }
+.hero-slide.is-active .hero-spark--2 { animation: hero-twinkle 3.2s 1.8s ease-in-out infinite; }
+.hero-slide.is-active .hero-spark--3 { animation: hero-twinkle 2.5s 2.4s ease-in-out infinite; }
+.hero-slide.is-active .hero-spark--4 { animation: hero-twinkle 3s 1.5s ease-in-out infinite; }
+.hero-slide.is-active .hero-spark--5 { animation: hero-twinkle 2.6s 2.1s ease-in-out infinite; }
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* جهش: سقوط، فرود (له‌شدن)، جهش به بالا، فرود، جهش کوچک‌تر و آرام‌گرفتن */
+@keyframes hero-ring-bounce {
+  0%   { opacity: 0; transform: translateY(-240px) scale(0.9) rotate(-14deg); animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.5); }
+  14%  { opacity: 1; }
+  35%  { transform: translateY(0) scale(1.05, 0.94) rotate(0deg); animation-timing-function: cubic-bezier(0.15, 0.5, 0.4, 1); }
+  51%  { transform: translateY(-58px) scale(0.985, 1.025); animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.5); }
+  65%  { transform: translateY(0) scale(1.03, 0.97); animation-timing-function: cubic-bezier(0.15, 0.5, 0.4, 1); }
+  78%  { transform: translateY(-18px) scale(0.995, 1.01); animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.5); }
+  89%  { transform: translateY(0) scale(1.01, 0.99); animation-timing-function: ease-out; }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes hero-ripple {
+  0%   { opacity: 0;   transform: scale(0.55); }
+  1%   { opacity: 0.7; transform: scale(0.55); }
+  100% { opacity: 0;   transform: scale(1.25); }
+}
+
+@keyframes hero-shine {
+  0%, 35%   { -webkit-mask-position: 160% 0; mask-position: 160% 0; }
+  70%, 100% { -webkit-mask-position: -60% 0; mask-position: -60% 0; }
+}
+
+@keyframes hero-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--slide-accent) 50%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 18px transparent; }
+}
+
+@keyframes hero-drift {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50%      { transform: translateY(-16px) translateX(6px); }
+}
+
+@keyframes hero-necklace-in {
+  from { opacity: 0; transform: translateY(-120px) rotate(6deg); }
+  35%  { opacity: 1; transform: translateY(0) rotate(-3deg); }
+  60%  { transform: rotate(1.8deg); }
+  80%  { transform: rotate(-0.8deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes hero-pendulum {
+  0%   { opacity: 0; transform: translateY(-170px) rotate(-12deg); }
+  22%  { opacity: 1; transform: translateY(0) rotate(8deg); }
+  42%  { transform: rotate(-5deg); }
+  60%  { transform: rotate(3deg); }
+  76%  { transform: rotate(-1.6deg); }
+  90%  { transform: rotate(0.6deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes hero-flip {
+  0%   { opacity: 0; transform: perspective(900px) rotateY(-110deg) scale(0.75); }
+  60%  { opacity: 1; transform: perspective(900px) rotateY(8deg) scale(1.03); }
+  80%  { transform: perspective(900px) rotateY(-3deg) scale(0.995); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes hero-roll {
+  0%   { opacity: 0; transform: translateX(-260px) rotate(-160deg) scale(0.8); }
+  60%  { opacity: 1; transform: translateX(8px) rotate(5deg) scale(1.02); }
+  80%  { transform: translateX(-2px) rotate(-2deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-9px); }
+}
+
+@keyframes hero-glow {
+  0%, 100% { opacity: 0.65; transform: scale(0.94); }
+  50%      { opacity: 1; transform: scale(1.06); }
+}
+
+@keyframes hero-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+  50%      { opacity: 1; transform: scale(1) rotate(45deg); }
+}
+
+@keyframes hero-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- کنترل‌ها ---------- */
+
+.hero-controls {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  transform: translateX(-50%);
+}
+
+.hero-arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(31, 42, 55, 0.35);
+  border-radius: 50%;
+  background: none;
+  color: var(--hero-text);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.hero-arrow:hover {
+  background-color: var(--hero-text);
+  color: #ffffff;
+}
+
+.hero-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-dot {
+  padding: 10px 0;
+  border: none;
+  background: none;
+}
+
+.hero-dot-track {
+  display: block;
+  width: 28px;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background-color: rgba(31, 42, 55, 0.18);
+  transition: width 0.4s ease;
+}
+
+.hero-dot-track i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background-color: var(--hero-text);
+}
+
+.hero-dot.is-active .hero-dot-track {
+  width: 64px;
+}
+
+.hero-dot.is-active .hero-dot-track i {
+  animation: hero-fill var(--hero-delay) linear forwards;
+}
+
+@keyframes hero-fill {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* توقف پخش خودکار وقتی ماوس روی هیرو است یا کنترلی فوکوس صفحه‌کلید دارد */
+@media (hover: hover) {
+  .hero:hover .hero-dot.is-active .hero-dot-track i {
+    animation-play-state: paused;
+  }
+}
+
+.hero:has(:focus-visible) .hero-dot.is-active .hero-dot-track i {
+  animation-play-state: paused;
+}
+
+/* ---------- موبایل ---------- */
+
+@media (max-width: 768px) {
+  .hero {
+    height: 640px;
+  }
+
+  .hero-slide {
+    --cx: 50%;
+    --cy: 28%;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    align-content: center;
+    gap: 22px;
+    padding: 24px 24px 110px;
+    text-align: center;
+  }
+
+  .hero-visual {
+    order: -1;
+    width: min(62vw, 260px);
+  }
+
+  .hero-content {
+    max-width: none;
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+
+  .hero-text {
+    margin-bottom: 22px;
+    font-size: 0.95rem;
+    line-height: 1.9;
+  }
+
+  .hero-controls {
+    bottom: 22px;
+  }
+}
+
+/* ---------- کاهش حرکت ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero *,
+  .hero *::before,
+  .hero *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* بدون پخش خودکار: نوار پیشرفتِ اسلاید فعلی پر نمایش داده می‌شود */
+  .hero .hero-dot.is-active .hero-dot-track i {
+    animation: none;
+    width: 100%;
+  }
+}
